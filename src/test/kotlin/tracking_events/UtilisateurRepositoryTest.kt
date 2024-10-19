@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.junit.jupiter.api.extension.ExtendWith
+import tracking_events.model.Utilisateur
+import tracking_events.repository.UtilisateurRepository
 
 @DataJpaTest
 @ExtendWith(SpringExtension::class)
@@ -37,7 +39,7 @@ class UtilisateurRepositoryTest {
         val allUsers = utilisateurRepository.findAll()
         println("Contenu de la table Utilisateur :")
         allUsers.forEach { user ->
-            println("Nom: ${user.nom}, Email: ${user.email}")
+            println("Id: ${user.id}, Nom: ${user.nom}, Email: ${user.email}")
         }
     }
 }

@@ -1,4 +1,4 @@
-package tracking_events
+package tracking_events.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
