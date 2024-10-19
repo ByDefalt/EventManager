@@ -9,6 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.junit.jupiter.api.extension.ExtendWith
 import tracking_events.model.Utilisateur
 import tracking_events.repository.UtilisateurRepository
+import java.util.stream.Collectors
 
 @DataJpaTest
 @ExtendWith(SpringExtension::class)
@@ -18,28 +19,100 @@ class UtilisateurRepositoryTest {
     lateinit var utilisateurRepository: UtilisateurRepository
 
     @Test
-    fun `test findByNom should return a list of users with the same name`() {
-        // Préparer les données de test
-        val utilisateur1 = Utilisateur(nom = "Jean", email = "jean@example.com")
-        val utilisateur2 = Utilisateur(nom = "Jean", email = "jean2@example.com")
-        val utilisateur3 = Utilisateur(nom = "Marie", email = "marie@example.com")
+    fun `test utilisateur avec prenom et nom remplis`() {
+        assertDoesNotThrow {
+            Utilisateur(
+                firstName = "John",
+                lastName = "Doe",
+                email = "john.doe@example.com"
+            )
+        }
+    }
 
-        // Sauvegarder les utilisateurs dans la base
-        utilisateurRepository.saveAll(listOf(utilisateur1, utilisateur2, utilisateur3))
+    @Test
+    fun `test utilisateur avec prenom sans nom`() {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            Utilisateur(
+                firstName = "John",
+                lastName = null,
+                email = "john@example.com"
+            )
+        }
+        assertEquals("Si le prénom est rempli, le nom doit l'être aussi, et inversement", exception.message)
+    }
 
-        // Effectuer la demande à la base de données
-        val result = utilisateurRepository.findByNom("Jean")
+    @Test
+    fun `test utilisateur avec nom sans prenom`() {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            Utilisateur(
+                firstName = null,
+                lastName = "Doe",
+                email = "doe@example.com"
+            )
+        }
+        assertEquals("Si le prénom est rempli, le nom doit l'être aussi, et inversement", exception.message)
+    }
 
-        // Vérifier que le résultat contient les utilisateurs attendus
-        assertEquals(2, result.size)
-        assertTrue(result.any { it.email == "jean@example.com" })
-        assertTrue(result.any { it.email == "jean2@example.com" })
+    @Test
+    fun `test utilisateur avec pseudo sans nom et prenom`() {
+        assertDoesNotThrow {
+            Utilisateur(
+                pseudo = "johndoe",
+                firstName = null,
+                lastName = null,
+                email = "johndoe@example.com"
+            )
+        }
+    }
 
-        // Afficher le contenu de la table Utilisateur
-        val allUsers = utilisateurRepository.findAll()
-        println("Contenu de la table Utilisateur :")
-        allUsers.forEach { user ->
-            println("Id: ${user.id}, Nom: ${user.nom}, Email: ${user.email}")
+    @Test
+    fun `test utilisateur sans pseudo ni nom ni prenom`() {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            Utilisateur(
+                pseudo = null,
+                firstName = null,
+                lastName = null,
+                email = "anonymous@example.com"
+            )
+        }
+        assertEquals("Le pseudo doit être rempli ou le nom/prénom", exception.message)
+    }
+
+    @Test
+    fun `test utilisateur avec pseudo et nom et prenom remplis`() {
+        assertDoesNotThrow {
+            Utilisateur(
+                pseudo = "johndoe",
+                firstName = "John",
+                lastName = "Doe",
+                email = "johndoe@example.com"
+            )
+        }
+    }
+
+    @Test
+    fun `test utilisateur sans email`() {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            Utilisateur(
+                pseudo = "johndoe",
+                firstName = "John",
+                lastName = "Doe",
+                email = ""
+            )
+        }
+        assertEquals("Email ne peut pas être vide", exception.message)
+    }
+
+    @Test
+    fun `test utilisateur avec telephone optionnel rempli`() {
+        assertDoesNotThrow {
+            Utilisateur(
+                pseudo = "johndoe",
+                firstName = "John",
+                lastName = "Doe",
+                email = "johndoe@example.com",
+                phone = "1234567890"
+            )
         }
     }
 }

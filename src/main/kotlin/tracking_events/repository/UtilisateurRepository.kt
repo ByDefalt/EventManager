@@ -7,5 +7,5 @@ import tracking_events.model.Utilisateur
 @Repository
 interface UtilisateurRepository : JpaRepository<Utilisateur, Long> {
     // Méthode personnalisée pour rechercher des utilisateurs par nom
-    fun findByNom(nom: String): List<Utilisateur>
+    //fun findByNom(nom: String): List<Utilisateur>
 }
